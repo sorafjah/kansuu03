@@ -8,57 +8,72 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Plotly.js for graphing -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- Plotly Japanese Locale -->
+    <script src="https://cdn.plot.ly/plotly-locale-ja-latest.js"></script>
     <!-- Math.js for evaluating expressions -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.2.1/math.min.js"></script>
     <style>
         body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; }
+        /* 数式フォント用 */
+        .math-font { font-family: 'Times New Roman', Times, serif; font-style: italic; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
 
-    <!-- Header -->
-    <header class="bg-blue-600 text-white p-4 shadow-md">
-        <div class="container mx-auto max-w-5xl flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                </svg>
-                Graph Simulator
-            </h1>
-            <span class="text-sm bg-blue-700 py-1 px-3 rounded-full">Web Edition</span>
-        </div>
-    </header>
+    <!-- Header Removed -->
 
     <!-- Main Content -->
-    <main class="flex-grow container mx-auto max-w-5xl p-4 md:p-6 flex flex-col md:flex-row gap-6">
+    <main class="flex-grow container mx-auto max-w-5xl p-4 md:p-6 flex flex-col md:flex-row gap-6 mt-4">
         
         <!-- Controls Sidebar -->
         <div class="w-full md:w-1/3 bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
             <h2 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">設定パネル</h2>
 
-            <!-- Function Input -->
+            <!-- Function Input with f(x)= prefix -->
             <div class="mb-5">
-                <label class="block text-sm font-medium text-gray-700 mb-1">関数 f(x)</label>
-                <div class="relative">
-                    <input type="text" id="functionInput" value="x^2" 
-                        class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition font-mono text-lg"
-                        placeholder="例: x^2 + 2*x">
+                <label class="block text-sm font-medium text-gray-700 mb-2">関数入力</label>
+                <div class="flex items-center gap-2">
+                    <span class="text-xl font-serif text-gray-600 whitespace-nowrap math-font">f(x) =</span>
+                    <div class="relative w-full">
+                        <input type="text" id="functionInput" value="x^2" 
+                            class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition font-mono text-lg"
+                            placeholder="x^2 + 2*x">
+                    </div>
                 </div>
-                <p id="helperText" class="text-gray-400 text-xs mt-1">全角入力は自動変換されます</p>
-                <p id="errorMsg" class="text-red-500 text-xs mt-1 hidden">式に誤りがあります</p>
+                <!-- Helper text removed as requested -->
+                <p id="errorMsg" class="text-red-500 text-xs mt-1 hidden text-right">式に誤りがあります</p>
             </div>
 
             <!-- Range Inputs -->
-            <div class="grid grid-cols-2 gap-4 mb-5">
-                <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">X 最小値</label>
-                    <input type="number" id="xMin" value="-10" 
-                        class="w-full p-2 bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-gray-700 mb-2">表示範囲設定</label>
+                
+                <!-- X Axis -->
+                <div class="grid grid-cols-2 gap-4 mb-2">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">X 最小値</label>
+                        <input type="number" id="xMin" value="-10" 
+                            class="w-full p-2 bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">X 最大値</label>
+                        <input type="number" id="xMax" value="10" 
+                            class="w-full p-2 bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">X 最大値</label>
-                    <input type="number" id="xMax" value="10" 
-                        class="w-full p-2 bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 outline-none">
+
+                <!-- Y Axis -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Y 最小値</label>
+                        <input type="number" id="yMin" value="-10" 
+                            class="w-full p-2 bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Y 最大値</label>
+                        <input type="number" id="yMax" value="10" 
+                            class="w-full p-2 bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    </div>
                 </div>
             </div>
 
@@ -66,10 +81,12 @@
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700 mb-2">プリセット</label>
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="setFunc('x^2')" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 transition">2次関数</button>
-                    <button onclick="setFunc('sin(x)')" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 transition">サイン波</button>
-                    <button onclick="setFunc('1/x')" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 transition">反比例</button>
-                    <button onclick="setFunc('sqrt(x)')" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 transition">ルート</button>
+                    <button onclick="setFunc('x^2', -10, 10, -5, 15)" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 transition">x²</button>
+                    <button onclick="setFunc('2^x', -5, 5, 0, 10)" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 transition">2^x</button>
+                    <button onclick="setFunc('sin(x)', -6, 6, -2, 2)" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 transition">sin(x)</button>
+                    <button onclick="setFunc('tan(x)', -5, 5, -5, 5)" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 transition">tan(x)</button>
+                    <button onclick="setFunc('sqrt(x)', 0, 10, 0, 5)" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 transition">√x</button>
+                    <button onclick="setFunc('log(x)', 0, 10, -5, 5)" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm text-gray-700 transition">log(x)</button>
                 </div>
             </div>
 
@@ -82,18 +99,26 @@
                 <ul class="list-disc list-inside space-y-1 ml-1 text-xs">
                     <li>べき乗: <code class="bg-blue-100 px-1 rounded">x^2</code> または <code class="bg-blue-100 px-1 rounded">x**2</code></li>
                     <li>掛け算: <code class="bg-blue-100 px-1 rounded">2*x</code> (×は省略不可)</li>
-                    <li>三角関数: <code class="bg-blue-100 px-1 rounded">sin(x)</code>, <code class="bg-blue-100 px-1 rounded">cos(x)</code></li>
-                    <li>定数: <code class="bg-blue-100 px-1 rounded">pi</code>, <code class="bg-blue-100 px-1 rounded">e</code></li>
+                    <li>三角関数: <code class="bg-blue-100 px-1 rounded">sin(x)</code>, <code class="bg-blue-100 px-1 rounded">tan(x)</code></li>
                 </ul>
             </div>
         </div>
 
         <!-- Graph Area -->
-        <div class="w-full md:w-2/3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col relative">
+        <div class="w-full md:w-2/3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col relative group">
+            <!-- Recalculate Button -->
+            <button onclick="recalculateFromView()" 
+                class="absolute top-3 right-3 z-10 bg-white/90 hover:bg-white text-blue-600 border border-blue-200 shadow-md px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition backdrop-blur-sm group-hover:opacity-100 md:opacity-90">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                今の範囲で再計算
+            </button>
+
             <div id="plot" class="w-full h-full min-h-[400px]"></div>
             
-            <!-- Loading Overlay (hidden by default) -->
-            <div id="loading" class="absolute inset-0 bg-white/80 hidden items-center justify-center">
+            <!-- Loading Overlay -->
+            <div id="loading" class="absolute inset-0 bg-white/80 hidden items-center justify-center pointer-events-none">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             </div>
         </div>
@@ -107,14 +132,17 @@
         // --- 設定 ---
         const config = {
             responsive: true,
-            displayModeBar: true, // ズームなどのツールバーを表示
+            displayModeBar: true, 
             displaylogo: false,
-            modeBarButtonsToRemove: ['lasso2d', 'select2d']
+            modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+            scrollZoom: true, // スクロールズームを有効化
+            locale: 'ja' // 日本語化設定
         };
 
         const layout = {
             margin: { t: 40, r: 40, b: 40, l: 60 },
             autosize: true,
+            dragmode: 'pan', // デフォルトを「移動」に設定
             xaxis: {
                 title: 'x',
                 zeroline: true,
@@ -127,7 +155,8 @@
                 zeroline: true,
                 zerolinecolor: '#333',
                 zerolinewidth: 2,
-                gridcolor: '#eee'
+                gridcolor: '#eee',
+                autorange: false // Y軸も手動制御を基本とする
             },
             hovermode: 'closest',
             paper_bgcolor: '#fff',
@@ -138,17 +167,17 @@
         function sanitizeInput(str) {
             if (!str) return "";
             
-            // 1. 全角英数字・記号を半角に変換 (ASCII範囲)
+            // 1. 全角英数字・記号を半角に変換
             let s = str.replace(/[！-～]/g, function(ch) {
                 return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0);
             });
 
             // 2. その他の記号の正規化
-            s = s.replace(/　/g, " ")     // 全角スペース
-                 .replace(/×/g, "*")     // 掛ける
-                 .replace(/÷/g, "/")     // 割る
-                 .replace(/−/g, "-")     // 全角マイナス等のバリエーション
-                 .replace(/ー/g, "-");    // 長音（マイナスと間違えやすい）
+            s = s.replace(/　/g, " ")
+                 .replace(/×/g, "*")
+                 .replace(/÷/g, "/")
+                 .replace(/−/g, "-")
+                 .replace(/ー/g, "-");
 
             return s;
         }
@@ -158,98 +187,139 @@
             let expressionStr = document.getElementById('functionInput').value;
             const xMin = parseFloat(document.getElementById('xMin').value);
             const xMax = parseFloat(document.getElementById('xMax').value);
+            const yMin = parseFloat(document.getElementById('yMin').value);
+            const yMax = parseFloat(document.getElementById('yMax').value);
             const errorMsg = document.getElementById('errorMsg');
 
-            // 入力の正規化（全角対策）
             expressionStr = sanitizeInput(expressionStr);
 
-            // バリデーション
-            if (isNaN(xMin) || isNaN(xMax) || xMin >= xMax) {
-                // 範囲エラーは静かに無視してデフォルトに戻さない（ユーザー体験のため）
-                return;
-            }
+            if (isNaN(xMin) || isNaN(xMax) || xMin >= xMax) return;
+            // Y軸バリデーション
+            const useYRange = !isNaN(yMin) && !isNaN(yMax) && yMin < yMax;
 
             try {
                 errorMsg.classList.add('hidden');
                 document.getElementById('functionInput').classList.remove('border-red-500');
 
-                // 式をコンパイル (Math.jsを使用)
                 const expr = math.compile(expressionStr);
-
-                // データを生成
                 const xValues = [];
                 const yValues = [];
-                const step = (xMax - xMin) / 500; // 500点で描画
+                
+                // 点の数を動的に調整
+                const range = xMax - xMin;
+                const points = Math.min(2500, Math.max(800, range * 100)); 
+                const step = range / points;
+                
+                // 不連続点検出のための閾値 (Y軸の表示範囲に基づく)
+                const yRange = useYRange ? (yMax - yMin) : 20;
+                const discontinuityThreshold = yRange * 5; 
+
+                let prevY = null;
 
                 for (let x = xMin; x <= xMax; x += step) {
                     try {
-                        // スコープを作成してxを代入
                         let y = expr.evaluate({ x: x });
                         
-                        // 複素数や無限大のチェック
-                        if (typeof y === 'object' && 're' in y) {
-                             // 複素数が返ってきた場合は実部だけ使うか、NaNにする
-                             y = NaN; 
-                        }
-                        if (!isFinite(y)) {
-                            y = NaN; // 無限大は描画しない
-                        }
+                        // 数値チェック
+                        if (typeof y === 'object' && 're' in y) y = NaN; 
+                        if (!isFinite(y)) y = NaN;
                         
+                        // 計算上のリミット
+                        if (Math.abs(y) > 1e9) y = NaN;
+
+                        // 不連続点（漸近線）の検出
+                        if (prevY !== null && !isNaN(prevY) && !isNaN(y)) {
+                            const diff = Math.abs(y - prevY);
+                            if (diff > discontinuityThreshold) {
+                                xValues.push(x);
+                                yValues.push(null); 
+                                prevY = y;
+                                xValues.push(x);
+                                yValues.push(y);
+                                continue;
+                            }
+                        }
+
                         xValues.push(x);
                         yValues.push(y);
+                        prevY = y;
+
                     } catch (e) {
                         xValues.push(x);
                         yValues.push(NaN);
+                        prevY = NaN;
                     }
                 }
 
-                // Plotlyで描画
                 const trace = {
                     x: xValues,
                     y: yValues,
                     mode: 'lines',
                     type: 'scatter',
-                    name: `f(x) = ${expressionStr}`,
-                    line: {
-                        color: '#2563eb', // blue-600
-                        width: 3
-                    }
+                    name: `f(x)`,
+                    line: { color: '#2563eb', width: 2.5 }
                 };
 
-                // レイアウトの範囲更新
+                // X軸・Y軸の範囲を更新
                 layout.xaxis.range = [xMin, xMax];
                 
-                // 初回描画か更新かで分ける
+                if (useYRange) {
+                    layout.yaxis.range = [yMin, yMax];
+                    layout.yaxis.autorange = false;
+                } else {
+                    layout.yaxis.autorange = true;
+                }
+                
                 Plotly.react('plot', [trace], layout, config);
 
             } catch (err) {
-                // コンパイルエラーが発生した場合
-                // console.error(err); // デバッグ用
                 errorMsg.textContent = "式の形式が正しくありません";
                 errorMsg.classList.remove('hidden');
                 document.getElementById('functionInput').classList.add('border-red-500');
             }
         }
 
+        // --- 表示範囲に合わせて再計算 ---
+        function recalculateFromView() {
+            const plotDiv = document.getElementById('plot');
+            if (plotDiv.layout) {
+                if (plotDiv.layout.xaxis && plotDiv.layout.xaxis.range) {
+                    const xRange = plotDiv.layout.xaxis.range;
+                    document.getElementById('xMin').value = parseFloat(xRange[0]).toFixed(2);
+                    document.getElementById('xMax').value = parseFloat(xRange[1]).toFixed(2);
+                }
+                if (plotDiv.layout.yaxis && plotDiv.layout.yaxis.range) {
+                    const yRange = plotDiv.layout.yaxis.range;
+                    document.getElementById('yMin').value = parseFloat(yRange[0]).toFixed(2);
+                    document.getElementById('yMax').value = parseFloat(yRange[1]).toFixed(2);
+                }
+                
+                drawGraph();
+            }
+        }
+
         // --- イベントリスナー ---
+        const inputs = ['functionInput', 'xMin', 'xMax', 'yMin', 'yMax'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', debounce(drawGraph, 500));
+        });
         
-        // 入力変更時にグラフを更新
-        document.getElementById('functionInput').addEventListener('input', debounce(drawGraph, 500));
-        document.getElementById('xMin').addEventListener('input', debounce(drawGraph, 500));
-        document.getElementById('xMax').addEventListener('input', debounce(drawGraph, 500));
-        
-        // ウィンドウサイズ変更時にグラフサイズ調整
         window.addEventListener('resize', () => {
             Plotly.Plots.resize('plot');
         });
 
         // プリセットボタン用関数
-        function setFunc(func) {
+        function setFunc(func, xMin, xMax, yMin, yMax) {
             document.getElementById('functionInput').value = func;
+            
+            if (xMin !== undefined) document.getElementById('xMin').value = xMin;
+            if (xMax !== undefined) document.getElementById('xMax').value = xMax;
+            if (yMin !== undefined) document.getElementById('yMin').value = yMin;
+            if (yMax !== undefined) document.getElementById('yMax').value = yMax;
+            
             drawGraph();
         }
 
-        // デバウンス関数（入力のたびに処理が走りすぎないようにする）
         function debounce(func, wait) {
             let timeout;
             return function(...args) {
@@ -259,7 +329,6 @@
             };
         }
 
-        // 初期描画
         drawGraph();
 
     </script>
